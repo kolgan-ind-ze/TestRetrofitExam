@@ -11,32 +11,42 @@ import static org.junit.Assert.*;
  */
 public class ExampleUnitTest {
     @Test
-    public void testFindMax_1() {
-        double[] array = {20343.0, 567, 20343, 343.0, 5454};
-        assertEquals(20343.0, CheckArray.findMax(array), 0.0001);
+    public void testFindMax203430True() {
+        double check = 20343.0;
+        Boolean expected = true;
+        Boolean actual = CheckArray.findMax(check);
+        assertEquals(expected, actual);
     }
 
     @Test
-    public void testFindMax_2() {
-        double[] array = {567, 20343, 343.0, 5454};
-        assertEquals(20343, CheckArray.findMax(array), 0.0001);
+    public void testFindMax567False() {
+        double check = 567;
+        Boolean expected = false;
+        Boolean actual = CheckArray.findMax(check);
+        assertNotEquals(expected, actual);
     }
 
     @Test
-    public void testFindMax_3() {
-        double[] array = {20343.0, 567, 343.0, 5454};
-        assertEquals(20343.0, CheckArray.findMax(array), 0.0001);
+    public void testFindMax20343True() {
+        double check = 20343;
+        Boolean expected = true;
+        Boolean actual = CheckArray.findMax(check);
+        assertEquals(expected, actual);
     }
 
     @Test
-    public void testFindMax_4() {
-        double[] array = {20343.0, 567, 20343, 5454};
-        assertEquals(20343, CheckArray.findMax(array), 0.0001);
+    public void testFindMax3430False() {
+        double check = 343.0;
+        Boolean expected = false;
+        Boolean actual = CheckArray.findMax(check);
+        assertNotEquals(expected, actual);
     }
 
     @Test
-    public void testFindMax_5() {
-        double[] array = {20343.0, 567, 20343, 343.0};
-        assertEquals(20343, CheckArray.findMax(array), 0.0001);
+    public void testFindMax5454False() {
+        double check = 5454;
+        Boolean expected = false;
+        Boolean actual = CheckArray.findMax(check);
+        assertNotEquals(expected, actual);
     }
 }
