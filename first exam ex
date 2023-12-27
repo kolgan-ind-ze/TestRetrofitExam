@@ -1,0 +1,288 @@
+add new xaml
+<Window x:Class="Dam1r_praktica.AddChild"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Dam1r_praktica"
+        mc:Ignorable="d"
+        Title="Добавление ребенка" Height="500" Width="1000" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="30"/>
+            <ColumnDefinition Width="270"/>
+            <ColumnDefinition Width="550"/>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Label Content="ФИО" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="20"/>
+        <Label Content="Номер телефона родителя" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="20"/>
+        <Label Content="Группа" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="20"/>
+        <Label Content="Возраст" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="20"/>
+        <TextBox Name="Tbox_fullname" Grid.Column="2" Grid.Row="1" FontSize="20" VerticalAlignment="Center" Width="200" Height="35" HorizontalAlignment="Left"/>
+        <TextBox x:Name="Tbox_num_tel" Grid.Column="2" Grid.Row="2" FontSize="20" VerticalAlignment="Center" Width="450" Height="35" HorizontalAlignment="Left"/>
+        <ComboBox x:Name="Cmbox_groups" DisplayMemberPath="name" Grid.Column="2" Grid.Row="3" FontSize="20" VerticalAlignment="Center" Width="200" Height="35" HorizontalAlignment="Left"/>
+        <TextBox Name="Tbox_age" Grid.Column="2" Grid.Row="4" FontSize="20" VerticalAlignment="Center" Width="200" Height="35" HorizontalAlignment="Left"/>
+        <Button x:Name="Btn_add_child" Content="Отправить" Grid.Column="2" Grid.Row="6" Width="150" FontSize="20" FontWeight="Bold" Click="Btn_add_child_Click"/>
+    </Grid>
+</Window>
+
+
+add new 
+using Dam1r_praktica.DataBase;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+
+namespace Dam1r_praktica
+{
+    /// <summary>
+    /// Логика взаимодействия для AddChild.xaml
+    /// </summary>
+    public partial class AddChild : Window
+    {
+        Children child = new Children();
+        public AddChild()
+        {
+            InitializeComponent();
+            Cmbox_groups.ItemsSource = Groups();
+        }
+
+        private void Btn_add_child_Click(object sender, RoutedEventArgs e)
+        {
+            child.full_name = Tbox_fullname.Text;
+            child.num_tel_parents = Tbox_num_tel.Text;
+            child.id_group = (Cmbox_groups.SelectedItem as Groups).id_group;
+            child.age = int.Parse(Tbox_age.Text);
+            Connection.connection.Children.Add(child);
+            Connection.connection.SaveChanges();
+            MessageBox.Show("Готово");
+        }
+
+        private List<Groups> Groups()
+        {
+            List<Groups> groups = Connection.connection.Groups.ToList();
+            return groups;
+        }
+    }
+}
+
+
+
+connection 
+namespace Dam1r_praktica.DataBase
+{
+    internal class Connection
+    {
+        public static Dam1rEntities connection = new Dam1rEntities();
+    }
+}
+
+show datagrid
+<Window x:Class="Dam1r_praktica.ViewChildren"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Dam1r_praktica"
+        mc:Ignorable="d"
+        Title="Список детей" Height="450" Width="1055" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="320"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <DataGrid Name="DG_children" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" AutoGenerateColumns="False" IsReadOnly="True" Margin="30,0,30,0">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding id_child}"/>
+                <DataGridTextColumn Header="ФИО" Binding="{Binding full_name}"/>
+                <DataGridTextColumn Header="Группа" Binding="{Binding Groups.name}"/>
+                <DataGridTextColumn Header="Возраст" Binding="{Binding age}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>
+
+public partial class ViewChildren : Window
+{
+    public ViewChildren()
+    {
+        InitializeComponent();
+        DG_children.ItemsSource = Connection.connection.Children.ToList();
+    }
+   
+}
+
+autorization
+<Window x:Class="Dam1r_praktica.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Dam1r_praktica"
+        mc:Ignorable="d"
+        Title="Авторизация" Height="450" Width="800" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="200"/>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="500"/>
+            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
+            <Label Content="Логин" FontWeight="Bold" FontSize="20" Margin="0,15"/>
+            <TextBox x:Name="Tbox_login" Text="test" Height="60" Width="400" Margin="14,0" FontSize="25"/>
+        </StackPanel>
+        <Label Content="Пароль" HorizontalAlignment="Left" FontWeight="Bold" Grid.Row="2" Grid.Column="1" FontSize="20" Margin="0,15"/>
+        <TextBox x:Name="Tbox_pass" HorizontalAlignment="Right" Height="60" Grid.Row="2" Grid.Column="1" Width="400" FontSize="25" Margin="16,0"/>
+        <PasswordBox x:Name="Passbox" Password="test" HorizontalAlignment="Right" Grid.Row="2" Grid.Column="1" Height="60" Width="400" FontSize="25" Margin="16,0"/>
+        <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center">
+            <Button x:Name="Btn_login" Content="Войти" FontWeight="Bold" Height="35" Width="100" Margin="40,0" Cursor="Hand" Click="Btn_login_Click"/>
+            <Button x:Name="Btn_registration" Content="Регистрация" FontWeight="Bold" Height="35" Width="100" Cursor="Hand" Click="Btn_registration_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
+
+code
+using Dam1r_praktica.DataBase;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+namespace Dam1r_praktica
+{
+    /// <summary>
+    /// Логика взаимодействия для MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        Users user = new Users();
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
+
+        private void Btn_login_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                user = Connection.connection.Users.Where(w => w.login == Tbox_login.Text && w.password == Passbox.Password).FirstOrDefault();
+                if (user != null)
+                {
+                    SelAct main = new SelAct();
+                    main.Show();
+                    this.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка: {ex}");
+            }
+        }
+
+        private void Btn_registration_Click(object sender, RoutedEventArgs e)
+        {
+            RgWin rg = new RgWin();
+            rg.ShowDialog();
+        }
+    }
+}
+registration
+using Dam1r_praktica.DataBase;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+
+namespace Dam1r_praktica
+{
+    /// <summary>
+    /// Логика взаимодействия для RgWin.xaml
+    /// </summary>
+    public partial class RgWin : Window
+    {
+        Users newUser = new Users();
+        public RgWin()
+        {
+            InitializeComponent();
+            DataContext = newUser;
+        }
+
+        private void Btn_create_Click(object sender, RoutedEventArgs e)
+        {
+            Users newUser = Connection.connection.Users.Where(w => w.login == TextBox_Login.Text).FirstOrDefault();
+            if (newUser == null)
+            {
+                if (TextBox_Login.Text != "")
+                {
+                    if (PassBox_first.Password == PassBox_second.Password && PassBox_first.Password != "")
+                    {
+                        newUser = new Users();
+                        newUser.login = TextBox_Login.Text;
+                        newUser.password = PassBox_first.Password;
+                        Connection.connection.Users.Add(newUser);
+                        Connection.connection.SaveChanges();
+                        MessageBox.Show("Все данные сохранены!");
+                        this.Close();
+                    }
+                    else MessageBox.Show("Пароли не совпадают!");
+                }
+                else MessageBox.Show("Введите логин");
+            }
+            else
+                MessageBox.Show("Такой пользователь уже существует!");
+            this.Close();
+        }
+    
+    }
+}
